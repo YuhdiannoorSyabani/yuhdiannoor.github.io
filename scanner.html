@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Scanner QR Code</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h2>Scan Kode Registrasi</h2>
+  <div id="reader" style="width: 300px;"></div>
+  <div id="hasil" style="margin-top: 20px; font-size: 18px;"></div>
+
+  <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbxazIvvB4Ef3iNrUUh_hQiFQdhptxtCSm6uE28qw853N7drQmMVSjPDxknOwbf8liQv4A/exec";
+
+    function onScanSuccess(qrMessage) {
+      document.getElementById("hasil").innerHTML = "Mencocokkan...";
+      fetch(apiUrl + "?kode=" + encodeURIComponent(qrMessage))
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "valid") {
+            document.getElementById("hasil").innerHTML =
+              `<b style="color:green;">Valid!</b><br>Nama: ${data.nama}<br>Email: ${data.email}<br>Kode: ${data.kode}`;
+          } else {
+            document.getElementById("hasil").innerHTML =
+              `<b style="color:red;">Kode tidak ditemukan</b>`;
+          }
+        });
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
